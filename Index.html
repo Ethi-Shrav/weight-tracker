@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weight Loss Tracker - Journey to 60kg</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #636e72;
+            margin-top: 5px;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 20px;
+            margin: 20px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            background: linear-gradient(90deg, #00b894, #00cec9);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #2d3436;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .tab.active {
+            background: #0984e3;
+        }
+        
+        .tab:hover {
+            background: #636e72;
+        }
+        
+        .tab-content {
+            padding: 20px;
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-group {
+            margin: 15px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+        
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus, .form-group select:focus {
+            border-color: #0984e3;
+            outline: none;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #0984e3, #74b9ff);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+        
+        .meal-plan {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .meal-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 5px solid #0984e3;
+        }
+        
+        .meal-title {
+            font-weight: 600;
+            color: #2d3436;
+            margin-bottom: 8px;
+        }
+        
+        .meal-options {
+            font-size: 14px;
+            color: #636e72;
+        }
+        
+        .exercise-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin: 10px 0;
+            border-left: 5px solid #00b894;
+        }
+        
+        .checklist {
+            list-style: none;
+        }
+        
+        .checklist li {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .checklist input[type="checkbox"] {
+            margin-right: 10px;
+            width: 20px;
+            height: 20px;
+        }
+        
+        .history-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .motivation-box {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .container {
+                margin: 5px;
+                border-radius: 15px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+            }
+            
+            .tab {
+                flex: 1 1 50%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Weight Loss Journey</h1>
+            <p>Target: 75.5kg → 60kg | Body Fat: 12-15%</p>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="currentWeight">75.5</div>
+                <div class="stat-label">Current Weight (kg)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="weightLoss">0.0</div>
+                <div class="stat-label">Weight Lost (kg)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="targetWeight">60.0</div>
+                <div class="stat-label">Target Weight (kg)</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="daysTracked">0</div>
+                <div class="stat-label">Days Tracked</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        <p style="text-align: center; margin-top: -10px; font-weight: 600;" id="progressText">0% Complete</p>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('daily')">📅 Daily Log</button>
+            <button class="tab" onclick="showTab('meals')">🍽️ Meal Plan</button>
+            <button class="tab" onclick="showTab('workout')">💪 Workout</button>
+            <button class="tab" onclick="showTab('progress')">📊 Progress</button>
+        </div>
+        
+        <div id="daily" class="tab-content active">
+            <h2>Daily Tracking</h2>
+            
+            <div class="form-group">
+                <label>Today's Weight (kg)</label>
+                <input type="number" step="0.1" id="todayWeight" placeholder="Enter your weight">
+            </div>
+            
+            <div class="form-group">
+                <label>Water Intake (glasses)</label>
+                <input type="number" id="waterIntake" placeholder="Target: 12-16 glasses">
+            </div>
+            
+            <h3>Daily Checklist</h3>
+            <ul class="checklist">
+                <li><input type="checkbox" id="breakfast"> Had healthy breakfast</li>
+                <li><input type="checkbox" id="lunch"> Had healthy lunch</li>
+                <li><input type="checkbox" id="dinner"> Had healthy dinner</li>
+                <li><input type="checkbox" id="exercise"> Completed workout/badminton</li>
+                <li><input type="checkbox" id="water"> Drank enough water (12+ glasses)</li>
+                <li><input type="checkbox" id="sleep"> Got 7-8 hours sleep</li>
+                <li><input type="checkbox" id="steps"> Walked 8000+ steps</li>
+            </ul>
+            
+            <div class="form-group">
+                <label>Notes for Today</label>
+                <textarea id="dailyNotes" rows="3" placeholder="How did you feel? Any challenges?"></textarea>
+            </div>
+            
+            <button class="btn" onclick="saveDailyLog()">💾 Save Today's Log</button>
+        </div>
+        
+        <div id="meals" class="tab-content">
+            <h2>South Indian Meal Plan</h2>
+            <div class="meal-plan">
+                <div class="meal-card">
+                    <div class="meal-title">🌅 Morning (300-350 cal)</div>
+                    <div class="meal-options">
+                        • Idli (2) + Sambar + Coconut chutney<br>
+                        • Oats upma with vegetables + Buttermilk<br>
+                        • Ragi dosa (2) + Mint chutney<br>
+                        • Poha with curry leaves and peanuts
+                    </div>
+                </div>
+                
+                <div class="meal-card">
+                    <div class="meal-title">☕ Mid-Morning (50-80 cal)</div>
+                    <div class="meal-options">
+                        • Green tea + 5-6 almonds<br>
+                        • Tender coconut water<br>
+                        • Buttermilk with mint
+                    </div>
+                </div>
+                
+                <div class="meal-card">
+                    <div class="meal-title">🍽️ Lunch (450-550 cal)</div>
+                    <div class="meal-options">
+                        <strong>Veg Days (Tuesday + 2 others):</strong><br>
+                        • Brown rice + Dal + Vegetable curry + Rasam + Curd<br>
+                        • Sambar rice + Poriyal + Kootu<br><br>
+                        <strong>Non-Veg Days:</strong><br>
+                        • Fish curry (150g) + Rice + Vegetable + Rasam<br>
+                        • Chicken curry (100g) + Roti (2) + Dal
+                    </div>
+                </div>
+                
+                <div class="meal-card">
+                    <div class="meal-title">🥜 Evening (100-150 cal)</div>
+                    <div class="meal-options">
+                        • Sundal (1/2 cup)<br>
+                        • Roasted groundnuts + Green tea<br>
+                        • Cut fruits (apple/guava/papaya)<br>
+                        • Murukku (2-3 pieces) + Buttermilk
+                    </div>
+                </div>
+                
+                <div class="meal-card">
+                    <div class="meal-title">🌙 Dinner (400-500 cal)</div>
+                    <div class="meal-options">
+                        • Vegetable soup + 2 small dosas<br>
+                        • Ragi mudde + Sambar + Vegetable<br>
+                        • Grilled fish/chicken + vegetable + small rice<br>
+                        • Mixed vegetable curry + 2 rotis
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="workout" class="tab-content">
+            <h2>Exercise Plan</h2>
+            
+            <div class="exercise-card">
+                <div class="meal-title">🏸 Current Activity</div>
+                <div class="meal-options">Badminton - 1 hour, 4 times/week ✅</div>
+            </div>
+            
+            <div class="exercise-card">
+                <div class="meal-title">💪 Day 1 & 4 - Upper Body + Core</div>
+                <div class="meal-options">
+                    • Push-ups: 3 sets x 8-15 reps<br>
+                    • Pike push-ups: 3 sets x 5-10 reps<br>
+                    • Tricep dips (chair): 3 sets x 8-12 reps<br>
+                    • Plank: 3 sets x 30-60 seconds<br>
+                    • Mountain climbers: 3 sets x 20 reps<br>
+                    • Bicycle crunches: 3 sets x 20 reps
+                </div>
+            </div>
+            
+            <div class="exercise-card">
+                <div class="meal-title">🦵 Day 2 & 5 - Lower Body + Cardio</div>
+                <div class="meal-options">
+                    • Squats: 3 sets x 15-20 reps<br>
+                    • Lunges: 3 sets x 10 per leg<br>
+                    • Single-leg glute bridges: 3 sets x 12 per leg<br>
+                    • Calf raises: 3 sets x 20 reps<br>
+                    • Burpees: 3 sets x 8-12 reps<br>
+                    • High knees: 3 sets x 30 seconds
+                </div>
+            </div>
+            
+            <div class="exercise-card">
+                <div class="meal-title">🔥 Day 3 & 6 - Full Body HIIT</div>
+                <div class="meal-options">
+                    Circuit (45 sec work, 15 sec rest, repeat 3-4x):<br>
+                    • Jumping jacks<br>
+                    • Bodyweight squats<br>
+                    • Push-ups<br>
+                    • Plank<br>
+                    • Mountain climbers
+                </div>
+            </div>
+            
+            <h3>Today's Workout Tracker</h3>
+            <div class="form-group">
+                <label>Exercise Type</label>
+                <select id="exerciseType">
+                    <option>Badminton</option>
+                    <option>Upper Body + Core</option>
+                    <option>Lower Body + Cardio</option>
+                    <option>Full Body HIIT</option>
+                    <option>Walking</option>
+                    <option>Other</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Duration (minutes)</label>
+                <input type="number" id="exerciseDuration" placeholder="e.g., 60">
+            </div>
+            
+            <button class="btn" onclick="logExercise()">📝 Log Exercise</button>
+        </div>
+        
+        <div id="progress" class="tab-content">
+            <h2>Progress Tracking</h2>
+            
+            <div class="motivation-box" id="motivationBox">
+                <h3>🎯 Keep Going!</h3>
+                <p id="motivationText">Every step counts towards your goal!</p>
+            </div>
+            
+            <h3>Weight History</h3>
+            <div id="weightHistory">
+                <p>Start logging your daily weight to see progress here!</p>
+            </div>
+            
+            <h3>Exercise Log</h3>
+            <div id="exerciseHistory">
+                <p>Log your exercises to see your activity history here!</p>
+            </div>
+            
+            <h3>Weekly Goals</h3>
+            <ul class="checklist">
+                <li><input type="checkbox" id="weeklyWeight"> Weekly weigh-in completed</li>
+                <li><input type="checkbox" id="weeklyPhotos"> Progress photos taken</li>
+                <li><input type="checkbox" id="weeklyMeasures"> Measurements recorded</li>
+                <li><input type="checkbox" id="weeklyReview"> Weekly review completed</li>
+            </ul>
+            
+            <button class="btn btn-danger" onclick="resetData()">🗑️ Reset All Data</button>
+        </div>
+    </div>
+
+    <script>
+        // Initialize data storage
+        let userData = {
+            weights: [],
+            exercises: [],
+            dailyLogs: [],
+            startDate: new Date().toISOString().split('T')[0],
+            startWeight: 75.5,
+            targetWeight: 60.0
+        };
+
+        // Load saved data
+        if (localStorage.getItem('weightLossData')) {
+            userData = JSON.parse(localStorage.getItem('weightLossData'));
+        }
+
+        // Tab switching
+        function showTab(tabName) {
+            const tabs = document.querySelectorAll('.tab');
+            const contents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => tab.classList.remove('active'));
+            contents.forEach(content => content.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+
+        // Update dashboard stats
+        function updateStats() {
+            const currentWeight = userData.weights.length > 0 ? userData.weights[userData.weights.length - 1].weight : userData.startWeight;
+            const weightLoss = userData.startWeight - currentWeight;
+            const progress = (weightLoss / (userData.startWeight - userData.targetWeight)) * 100;
+            const daysTracked = userData.dailyLogs.length;
+
+            document.getElementById('currentWeight').textContent = currentWeight.toFixed(1);
+            document.getElementById('weightLoss').textContent = weightLoss.toFixed(1);
+            document.getElementById('daysTracked').textContent = daysTracked;
+            document.getElementById('progressFill').style.width = Math.min(progress, 100) + '%';
+            document.getElementById('progressText').textContent = Math.min(progress, 100).toFixed(1) + '% Complete';
+
+            updateMotivation(progress, weightLoss);
+        }
+
+        // Update motivation message
+        function updateMotivation(progress, weightLoss) {
+            const motivationText = document.getElementById('motivationText');
+            const motivationBox = document.getElementById('motivationBox');
+            
+            if (progress >= 100) {
+                motivationText.textContent = '🎉 Congratulations! You\'ve reached your goal!';
+                motivationBox.style.background = 'linear-gradient(135deg, #00b894, #00cec9)';
+            } else if (progress >= 75) {
+                motivationText.textContent = `🔥 Amazing! You're ${progress.toFixed(1)}% there! Keep pushing!`;
+                motivationBox.style.background = 'linear-gradient(135deg, #fdcb6e, #e17055)';
+            } else if (progress >= 50) {
+                motivationText.textContent = `💪 Halfway there! You've lost ${weightLoss.toFixed(1)}kg already!`;
+                motivationBox.style.background = 'linear-gradient(135deg, #74b9ff, #0984e3)';
+            } else if (progress >= 25) {
+                motivationText.textContent = `🌟 Great progress! ${weightLoss.toFixed(1)}kg down, keep going!`;
+            } else if (weightLoss > 0) {
+                motivationText.textContent = `✨ You're on the right track! Every kg matters!`;
+            } else {
+                motivationText.textContent = '🎯 Your journey starts now! Log your first weight!';
+            }
+        }
+
+        // Save daily log
+        function saveDailyLog() {
+            const todayWeight = parseFloat(document.getElementById('todayWeight').value);
+            const waterIntake = parseInt(document.getElementById('waterIntake').value) || 0;
+            const dailyNotes = document.getElementById('dailyNotes').value;
+            
+            const checklist = {
+                breakfast: document.getElementById('breakfast').checked,
+                lunch: document.getElementById('lunch').checked,
+                dinner: document.getElementById('dinner').checked,
+                exercise: document.getElementById('exercise').checked,
+                water: document.getElementById('water').checked,
+                sleep: document.getElementById('sleep').checked,
+                steps: document.getElementById('steps').checked
+            };
+
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (todayWeight) {
+                userData.weights.push({
+                    date: today,
+                    weight: todayWeight
+                });
+            }
+
+            userData.dailyLogs.push({
+                date: today,
+                weight: todayWeight || null,
+                waterIntake: waterIntake,
+                notes: dailyNotes,
+                checklist: checklist
+            });
+
+            saveData();
+            updateStats();
+            updateHistory();
+            
+            // Clear form
+            document.getElementById('todayWeight').value = '';
+            document.getElementById('waterIntake').value = '';
+            document.getElementById('dailyNotes').value = '';
+            
+            // Reset checkboxes
+            Object.keys(checklist).forEach(key => {
+                document.getElementById(key).checked = false;
+            });
+
+            alert('✅ Daily log saved successfully!');
+        }
+
+        // Log exercise
+        function logExercise() {
+            const exerciseType = document.getElementById('exerciseType').value;
+            const duration = parseInt(document.getElementById('exerciseDuration').value);
+            
+            if (!exerciseType || !duration) {
+                alert('Please fill in all exercise details');
+                return;
+            }
+
+            userData.exercises.push({
+                date: new Date().toISOString().split('T')[0],
+                type: exerciseType,
+                duration: duration
+            });
+
+            saveData();
+            updateHistory();
+            
+            document.getElementById('exerciseType').selectedIndex = 0;
+            document.getElementById('exerciseDuration').value = '';
+            
+            alert('💪 Exercise logged successfully!');
+        }
+
+        // Update history displays
+        function updateHistory() {
+            // Weight history
+            const weightHistory = document.getElementById('weightHistory');
+            if (userData.weights.length > 0) {
+                weightHistory.innerHTML = userData.weights.slice(-10).reverse().map(entry => 
+                    `<div class="history-item">
+                        <span>${entry.date}</span>
+                        <strong>${entry.weight} kg</strong>
+                    </div>`
+                ).join('');
+            }
+
+            // Exercise history
+            const exerciseHistory = document.getElementById('exerciseHistory');
+            if (userData.exercises.length > 0) {
+                exerciseHistory.innerHTML = userData.exercises.slice(-10).reverse().map(entry => 
+                    `<div class="history-item">
+                        <span>${entry.type} (${entry.date})</span>
+                        <strong>${entry.duration} mins</strong>
+                    </div>`
+                ).join('');
+            }
+        }
+
+        // Save data to localStorage
+        function saveData() {
+            localStorage.setItem('weightLossData', JSON.stringify(userData));
+        }
+
+        // Reset all data
+        function resetData() {
+            if (confirm('Are you sure you want to reset all data? This cannot be undone.')) {
+                localStorage.removeItem('weightLossData');
+                userData = {
+                    weights: [],
+                    exercises: [],
+                    dailyLogs: [],
+                    startDate: new Date().toISOString().split('T')[0],
+                    startWeight: 75.5,
+                    targetWeight: 60.0
+                };
+                updateStats();
+                updateHistory();
+                alert('🗑️ All data has been reset!');
+            }
+        }
+
+        // Initialize app
+        updateStats();
+        updateHistory();
+
+        // Add some motivational tips
+        const tips = [
+            "💧 Drink water before each meal to feel fuller!",
+            "🚶‍♂️ Take stairs instead of elevators when possible!",
+            "😴 Good sleep is crucial for weight loss!",
+            "🥗 Fill half your plate with vegetables!",
+            "📱 Take progress photos - sometimes the scale doesn't show everything!",
+            "🎯 Focus on building healthy habits, not just losing weight!",
+            "💪 Consistency beats perfection every time!",
+            "🏸 Your badminton sessions are perfect cardio!"
+        ];
+
+        // Show a random tip on page load
+        setTimeout(() => {
+            const randomTip = tips[Math.floor(Math.random() * tips.length)];
+            const tipDiv = document.createElement('div');
+            tipDiv.innerHTML = `
+                <div style="background: #74b9ff; color: white; padding: 10px; margin: 10px; border-radius: 8px; text-align: center; animation: fadeIn 0.5s;">
+                    <strong>💡 Daily Tip:</strong> ${randomTip}
+                </div>
+            `;
+            document.querySelector('.container').appendChild(tipDiv);
+            
+            setTimeout(() => tipDiv.remove(), 5000);
+        }, 2000);
+    </script>
+    
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</body>
+</html>
